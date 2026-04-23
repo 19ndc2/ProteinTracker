@@ -1,0 +1,65 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <div class="header-brand">
+      <span class="header-icon">💪</span>
+      <span class="header-title">Protein Tracker</span>
+    </div>
+    <div class="header-user">
+      <a routerLink="/history" class="btn-ghost">History</a>
+      <span class="user-name">{{ auth.currentUser()?.displayName }}</span>
+      <button class="btn-secondary" (click)="auth.logout()">Log out</button>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    @if (loading()) {
+      <div class="loading-state">Loading…</div>
+    } @else {
+      <div class="dashboard-grid">
+
+        <!-- Progress ring card -->
+        <div class="card ring-card">
+          <svg class="progress-ring" viewBox="0 0 100 100" aria-label="Daily protein progress">
+            <circle class="ring-track" cx="50" cy="50" r="40" />
+            <circle
+              class="ring-fill"
+              cx="50" cy="50" r="40"
+              stroke-dasharray="251.3"
+              [attr.stroke-dashoffset]="dashOffset()"
+            />
+          </svg>
+          <div class="ring-text">
+            <span class="ring-total">{{ totalGrams() }}</span>
+            <span class="ring-label">/ {{ dailyGoal() }}g</span>
+          </div>
+          <p class="ring-progress-label">{{ progress() }}% of daily goal</p>
+        </div>
+
+        <!-- Log meal card -->
+        <div class="card log-card">
+          <app-log-meal (mealConfirmed)="onMealConfirmed($event)" />
+        </div>
+
+      </div>
+
+      <!-- Today's entries -->
+      @if (entries().length > 0) {
+        <div class="card entries-card">
+          <h3 class="entries-title">Today's meals</h3>
+          <ul class="entries-list">
+            @for (entry of entries(); track entry.loggedAt) {
+              <li class="entry-item">
+                <span class="entry-name">{{ entry.foodDescription }}</span>
+                <span class="entry-grams">{{ entry.proteinGrams }}g</span>
+              </li>
+            }
+          </ul>
+        </div>
+      } @else {
+        <div class="card empty-state">
+          <p>No meals logged today. Log your first meal above.</p>
+        </div>
+      }
+    }
+  </main>
+</div>

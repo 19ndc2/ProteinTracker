@@ -1,0 +1,8 @@
+app:
+  cors:
+    allowed-origins: http://localhost:4200,http://localhost:4201
+
+logging:
+  level:
+    com.proteintracker: DEBUG
+    org.springframework.security: DEBUG

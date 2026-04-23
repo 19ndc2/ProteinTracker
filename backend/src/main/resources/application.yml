@@ -1,0 +1,22 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/protein_tracker}
+      auto-index-creation: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dGhpcyBpcyBhIGRldiBzZWNyZXQga2V5IGZvciBsb2NhbCBkZXZlbG9wbWVudCBvbmx5IQ==}
+    expiration-ms: 604800000
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+  mistral:
+    api-key: ${MISTRAL_API_KEY:}
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:}
+  elevenlabs:
+    api-key: ${ELEVENLABS_API_KEY:}
+    voice-id: ${ELEVENLABS_VOICE_ID:21m00Tcm4TlvDq8ikWAM}
+
+server:
+  port: 8080

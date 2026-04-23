@@ -1,0 +1,202 @@
+.dashboard {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .header-icon { font-size: 1.5rem; }
+    .header-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+  }
+
+  .header-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .user-name {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+.btn-ghost {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+
+  &:hover {
+    color: var(--color-text);
+    background: var(--color-surface-raised);
+  }
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.loading-state {
+  color: var(--color-text-muted);
+  padding: 2rem;
+  text-align: center;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+// Progress ring card
+.ring-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  position: relative;
+
+  .progress-ring {
+    width: 140px;
+    height: 140px;
+    transform: rotate(-90deg);
+
+    .ring-track {
+      fill: none;
+      stroke: var(--color-border);
+      stroke-width: 8;
+    }
+
+    .ring-fill {
+      fill: none;
+      stroke: var(--color-primary);
+      stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+  }
+
+  .ring-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -65%);
+    text-align: center;
+    pointer-events: none;
+
+    .ring-total {
+      display: block;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1;
+    }
+
+    .ring-label {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+  }
+
+  .ring-progress-label {
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+  }
+}
+
+// Log meal card
+.log-card {
+  // inherits .card
+}
+
+// Today's entries
+.entries-card {
+  .entries-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .entries-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .entry-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--color-border);
+
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .entry-name {
+        font-size: 0.9375rem;
+        color: var(--color-text);
+      }
+
+      .entry-grams {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--color-primary);
+        white-space: nowrap;
+        margin-left: 1rem;
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 2rem;
+  font-size: 0.9375rem;
+}

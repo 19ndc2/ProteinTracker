@@ -1,0 +1,40 @@
+<div class="history-page">
+  <header class="page-header">
+    <a routerLink="/dashboard" class="back-link">← Back</a>
+    <h1 class="page-title">History</h1>
+  </header>
+
+  <main class="page-main">
+    @if (loading()) {
+      <p class="loading-state">Loading…</p>
+    } @else if (days().length === 0) {
+      <div class="card empty-state">
+        <p>No history yet. Start logging meals on the dashboard.</p>
+        <a routerLink="/dashboard" class="btn-primary" style="display:inline-block;margin-top:1rem;">
+          Go to Dashboard
+        </a>
+      </div>
+    } @else {
+      <div class="days-list">
+        @for (day of days(); track day.date) {
+          <div class="card day-card">
+            <div class="day-header">
+              <span class="day-date">{{ day.date | date:'EEEE, MMM d' }}</span>
+              <span class="day-total">{{ day.totalProteinGrams }}g protein</span>
+            </div>
+            @if (day.entries.length > 0) {
+              <ul class="day-entries">
+                @for (entry of day.entries; track entry.loggedAt) {
+                  <li class="day-entry">
+                    <span class="entry-name">{{ entry.foodDescription }}</span>
+                    <span class="entry-grams">{{ entry.proteinGrams }}g</span>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>

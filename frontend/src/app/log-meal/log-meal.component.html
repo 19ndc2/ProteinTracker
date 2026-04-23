@@ -1,0 +1,78 @@
+<div class="log-meal">
+  <h3 class="section-title">Log a Meal</h3>
+
+  @if (state() === 'idle' || state() === 'parsing') {
+    <form class="input-row" (ngSubmit)="parse()">
+      <button
+        type="button"
+        class="btn-mic"
+        [class.recording]="voice.isRecording()"
+        (click)="toggleRecording()"
+        [title]="voice.isRecording() ? 'Stop recording' : 'Speak your meal'"
+      >
+        {{ voice.isRecording() ? '⏹' : '🎙' }}
+      </button>
+      <input
+        class="meal-input"
+        type="text"
+        placeholder="e.g. 2 chicken breasts and a cup of rice"
+        [ngModel]="transcript()"
+        (ngModelChange)="transcript.set($event)"
+        [ngModelOptions]="{standalone: true}"
+        [disabled]="state() === 'parsing' || voice.isRecording()"
+        autocomplete="off"
+      />
+      <button
+        class="btn-primary btn-log"
+        type="submit"
+        [disabled]="!transcript().trim() || state() === 'parsing' || voice.isRecording()"
+      >
+        {{ state() === 'parsing' ? 'Estimating…' : 'Estimate' }}
+      </button>
+    </form>
+
+    @if (voice.isRecording()) {
+      <p class="recording-hint">Recording… tap ⏹ to finish</p>
+    }
+
+    @if (errorMsg()) {
+      <p class="error-msg">{{ errorMsg() }}</p>
+    }
+  }
+
+  @if (state() === 'preview' || state() === 'confirming') {
+    <div class="preview-card">
+      <p class="preview-confirmation">{{ preview()?.confirmationText }}</p>
+      <div class="preview-grams">
+        <span class="grams-value">{{ preview()?.proteinGrams }}</span>
+        <span class="grams-label">grams protein</span>
+      </div>
+      <div class="preview-actions">
+        <button
+          class="btn-primary"
+          (click)="confirm()"
+          [disabled]="state() === 'confirming'"
+        >
+          {{ state() === 'confirming' ? 'Saving…' : 'Yes, log it' }}
+        </button>
+        <button
+          class="btn-secondary"
+          (click)="retry()"
+          [disabled]="state() === 'confirming'"
+        >
+          Try again
+        </button>
+      </div>
+      @if (errorMsg()) {
+        <p class="error-msg">{{ errorMsg() }}</p>
+      }
+    </div>
+  }
+
+  @if (state() === 'done') {
+    <div class="success-card">
+      <span class="success-icon">✓</span>
+      <span>Meal logged!</span>
+    </div>
+  }
+</div>
