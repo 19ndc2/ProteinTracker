@@ -18,10 +18,11 @@ export class LogMealComponent {
   @Output() mealConfirmed = new EventEmitter<ConfirmResponse>();
 
   transcript = signal('');
-  dateInput = signal('');
   state = signal<State>('idle');
   preview = signal<ProteinEstimate | null>(null);
   errorMsg = signal('');
+
+  readonly today = new Date().toISOString().slice(0, 10);
 
   constructor(
     private proteinService: ProteinService,
@@ -52,8 +53,7 @@ export class LogMealComponent {
     if (!p || this.state() !== 'preview') return;
     this.state.set('confirming');
 
-    const date = this.resolveDate();
-    this.proteinService.confirm(p.foodDescription, p.proteinGrams, date ?? undefined).subscribe({
+    this.proteinService.confirm(p.foodDescription, p.proteinGrams, p.date ?? undefined).subscribe({
       next: (res) => {
         this.mealConfirmed.emit(res);
         this.voice.speak(res.acknowledgementText).catch(() => {});
@@ -91,29 +91,8 @@ export class LogMealComponent {
     this.state.set('idle');
   }
 
-  /** Returns an ISO date string for the given input, or null meaning "today". */
-  private resolveDate(): string | null {
-    const raw = this.dateInput().trim().toLowerCase();
-    if (!raw || raw === 'today') return null;
-    if (raw === 'yesterday') return this.daysAgo(1);
-    const m = raw.match(/^(\d+)\s+days?\s+ago$/);
-    if (m) return this.daysAgo(parseInt(m[1], 10));
-    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
-    // Try parsing as a locale date (e.g. "01/15/2024") and fall back to today
-    const parsed = new Date(raw);
-    if (!isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
-    return null;
-  }
-
-  private daysAgo(n: number): string {
-    const d = new Date();
-    d.setDate(d.getDate() - n);
-    return d.toISOString().slice(0, 10);
-  }
-
   private reset(): void {
     this.transcript.set('');
-    this.dateInput.set('');
     this.preview.set(null);
     this.errorMsg.set('');
     this.state.set('idle');

@@ -15,7 +15,7 @@
       <input
         class="meal-input"
         type="text"
-        placeholder="e.g. 2 chicken breasts and a cup of rice"
+        placeholder="e.g. 2 chicken breasts yesterday"
         [ngModel]="transcript()"
         (ngModelChange)="transcript.set($event)"
         [ngModelOptions]="{standalone: true}"
@@ -30,21 +30,6 @@
         {{ state() === 'parsing' ? 'Estimating…' : 'Estimate' }}
       </button>
     </form>
-
-    <div class="date-row">
-      <label class="date-label" for="meal-date">Date:</label>
-      <input
-        id="meal-date"
-        class="date-input"
-        type="text"
-        placeholder="today (default)"
-        [ngModel]="dateInput()"
-        (ngModelChange)="dateInput.set($event)"
-        [ngModelOptions]="{standalone: true}"
-        [disabled]="state() === 'parsing'"
-        autocomplete="off"
-      />
-    </div>
 
     @if (voice.isRecording()) {
       <p class="recording-hint">Recording… tap ⏹ to finish</p>
@@ -62,8 +47,8 @@
         <span class="grams-value">{{ preview()?.proteinGrams }}</span>
         <span class="grams-label">grams protein</span>
       </div>
-      @if (dateInput().trim() && dateInput().trim().toLowerCase() !== 'today') {
-        <p class="preview-date">Logging to: {{ dateInput().trim() }}</p>
+      @if (preview()?.date && preview()?.date !== today) {
+        <p class="preview-date">📅 {{ preview()?.date | date:'MMMM d' }}</p>
       }
       <div class="preview-actions">
         <button

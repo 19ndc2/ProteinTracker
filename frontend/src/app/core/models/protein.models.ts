@@ -2,6 +2,7 @@ export interface ProteinEstimate {
   foodDescription: string;
   proteinGrams: number;
   confirmationText: string;
+  date?: string | null;
 }
 
 export interface ConfirmResponse {
