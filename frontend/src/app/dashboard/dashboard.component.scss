@@ -121,7 +121,6 @@
     left: 50%;
     transform: translate(-50%, -65%);
     text-align: center;
-    pointer-events: none;
 
     .ring-total {
       display: block;
@@ -134,6 +133,28 @@
     .ring-label {
       font-size: 0.75rem;
       color: var(--color-text-muted);
+      cursor: pointer;
+      &:hover { color: var(--color-primary); }
+    }
+
+    .ring-goal-edit {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+
+      .goal-input {
+        width: 3.5rem;
+        padding: 0.1rem 0.25rem;
+        background: var(--color-surface-raised);
+        border: 1px solid var(--color-primary);
+        border-radius: 4px;
+        color: var(--color-text);
+        font-size: 0.75rem;
+        text-align: center;
+        outline: none;
+      }
     }
   }
 
@@ -188,11 +209,46 @@
         font-weight: 600;
         color: var(--color-primary);
         white-space: nowrap;
-        margin-left: 1rem;
+        margin-left: auto;
+        padding-left: 1rem;
       }
     }
   }
 }
+
+.btn-delete-entry {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.25rem 0.375rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s, background 0.15s;
+
+  .entry-item:hover & {
+    opacity: 1;
+  }
+  &:hover {
+    color: var(--color-error);
+    background: var(--color-error-bg);
+  }
+}
+
+.btn-goal-save, .btn-goal-cancel {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.2rem;
+  border-radius: 3px;
+  &:hover { background: var(--color-surface-raised); }
+}
+.btn-goal-save { color: var(--color-primary); }
+.btn-goal-cancel { color: var(--color-error); }
 
 .empty-state {
   text-align: center;

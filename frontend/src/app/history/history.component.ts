@@ -26,4 +26,18 @@ export class HistoryComponent implements OnInit {
       error: () => this.loading.set(false)
     });
   }
+
+  deleteEntry(date: string, entryId: string): void {
+    this.proteinService.deleteEntry(date, entryId).subscribe({
+      next: (updated) => {
+        this.days.update(days =>
+          days
+            .map(day => day.date === date
+              ? { ...day, entries: updated.entries, totalProteinGrams: updated.totalProteinGrams }
+              : day)
+            .filter(day => day.entries.length > 0)
+        );
+      },
+    });
+  }
 }

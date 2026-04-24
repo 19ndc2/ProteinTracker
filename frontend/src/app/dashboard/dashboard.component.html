@@ -30,7 +30,28 @@
           </svg>
           <div class="ring-text">
             <span class="ring-total">{{ totalGrams() }}</span>
-            <span class="ring-label">/ {{ dailyGoal() }}g</span>
+            @if (goalEditing()) {
+              <span class="ring-goal-edit">
+                /&nbsp;<input
+                  class="goal-input"
+                  type="number"
+                  min="1"
+                  max="500"
+                  [ngModel]="goalDraft()"
+                  (ngModelChange)="goalDraft.set($event)"
+                  [ngModelOptions]="{standalone: true}"
+                  (keydown.enter)="saveGoal()"
+                  (keydown.escape)="cancelEditGoal()"
+                  autofocus
+                />g
+                <button class="btn-goal-save" (click)="saveGoal()" title="Save">✓</button>
+                <button class="btn-goal-cancel" (click)="cancelEditGoal()" title="Cancel">✕</button>
+              </span>
+            } @else {
+              <span class="ring-label" (click)="startEditGoal()" title="Click to change goal">
+                / {{ dailyGoal() }}g
+              </span>
+            }
           </div>
           <p class="ring-progress-label">{{ progress() }}% of daily goal</p>
         </div>
@@ -47,10 +68,15 @@
         <div class="card entries-card">
           <h3 class="entries-title">Today's meals</h3>
           <ul class="entries-list">
-            @for (entry of entries(); track entry.loggedAt) {
+            @for (entry of entries(); track entry.id) {
               <li class="entry-item">
                 <span class="entry-name">{{ entry.foodDescription }}</span>
                 <span class="entry-grams">{{ entry.proteinGrams }}g</span>
+                <button
+                  class="btn-delete-entry"
+                  (click)="deleteEntry(entry.id)"
+                  title="Remove entry"
+                >×</button>
               </li>
             }
           </ul>

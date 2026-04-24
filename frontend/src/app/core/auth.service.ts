@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuthResponse, AuthUser } from './models/auth.models';
+import { AuthResponse, AuthUser, UserResponse } from './models/auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -39,9 +39,27 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  updateGoal(goalGrams: number): Observable<UserResponse> {
+    return this.http
+      .patch<UserResponse>(`${environment.apiUrl}/auth/goal`, { goalGrams })
+      .pipe(tap(res => {
+        const user = this._currentUser();
+        if (user) {
+          const updated = { ...user, dailyGoalGrams: res.dailyGoalGrams };
+          localStorage.setItem(this.USER_KEY, JSON.stringify(updated));
+          this._currentUser.set(updated);
+        }
+      }));
+  }
+
   private storeSession(res: AuthResponse): void {
     localStorage.setItem(this.TOKEN_KEY, res.token);
-    const user: AuthUser = { userId: res.userId, email: res.email, displayName: res.displayName };
+    const user: AuthUser = {
+      userId: res.userId,
+      email: res.email,
+      displayName: res.displayName,
+      dailyGoalGrams: res.dailyGoalGrams ?? 150,
+    };
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this._currentUser.set(user);
   }
@@ -49,7 +67,9 @@ export class AuthService {
   private loadUser(): AuthUser | null {
     try {
       const raw = localStorage.getItem(this.USER_KEY);
-      return raw ? JSON.parse(raw) : null;
+      const user = raw ? JSON.parse(raw) : null;
+      if (user && user.dailyGoalGrams === undefined) user.dailyGoalGrams = 150;
+      return user;
     } catch {
       return null;
     }

@@ -24,10 +24,15 @@
             </div>
             @if (day.entries.length > 0) {
               <ul class="day-entries">
-                @for (entry of day.entries; track entry.loggedAt) {
+                @for (entry of day.entries; track entry.id) {
                   <li class="day-entry">
                     <span class="entry-name">{{ entry.foodDescription }}</span>
                     <span class="entry-grams">{{ entry.proteinGrams }}g</span>
+                    <button
+                      class="btn-delete-entry"
+                      (click)="deleteEntry(day.date, entry.id)"
+                      title="Remove entry"
+                    >×</button>
                   </li>
                 }
               </ul>

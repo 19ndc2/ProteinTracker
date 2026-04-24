@@ -4,6 +4,7 @@ import com.proteintracker.auth.dto.AuthResponse;
 import com.proteintracker.auth.dto.LoginRequest;
 import com.proteintracker.auth.dto.RegisterRequest;
 import com.proteintracker.auth.dto.UserResponse;
+import com.proteintracker.controller.dto.SetGoalRequest;
 import com.proteintracker.model.User;
 import com.proteintracker.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -76,11 +77,21 @@ public class AuthController {
                 user.getId(), user.getEmail(), user.getDisplayName(), user.getDailyGoalGrams()));
     }
 
+    @PatchMapping("/goal")
+    public ResponseEntity<?> updateGoal(@Valid @RequestBody SetGoalRequest request,
+                                        @AuthenticationPrincipal User user) {
+        user.setDailyGoalGrams(request.goalGrams());
+        userRepository.save(user);
+        return ResponseEntity.ok(new UserResponse(
+                user.getId(), user.getEmail(), user.getDisplayName(), user.getDailyGoalGrams()));
+    }
+
     private AuthResponse toAuthResponse(User user) {
         return new AuthResponse(
                 jwtService.generateToken(user),
                 user.getId(),
                 user.getEmail(),
-                user.getDisplayName());
+                user.getDisplayName(),
+                user.getDailyGoalGrams());
     }
 }

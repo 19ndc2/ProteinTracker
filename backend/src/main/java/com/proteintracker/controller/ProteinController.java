@@ -76,11 +76,15 @@ public class ProteinController {
     @PostMapping("/confirm")
     public ResponseEntity<ConfirmResponse> confirm(@Valid @RequestBody ConfirmRequest request,
                                                    @AuthenticationPrincipal User user) {
+        LocalDate date = (request.date() != null && !request.date().isBlank())
+                ? LocalDate.parse(request.date())
+                : LocalDate.now();
+
         DailyLog dailyLog = dailyLogRepository
-                .findByUserIdAndDate(user.getId(), LocalDate.now())
+                .findByUserIdAndDate(user.getId(), date)
                 .orElseGet(() -> DailyLog.builder()
                         .userId(user.getId())
-                        .date(LocalDate.now())
+                        .date(date)
                         .build());
 
         FoodEntry entry = FoodEntry.builder()
@@ -92,8 +96,26 @@ public class ProteinController {
         dailyLog.addEntry(entry);
         dailyLogRepository.save(dailyLog);
 
-        String ack = String.format("Logged! You've had %d grams of protein today.",
-                dailyLog.getTotalProteinGrams());
-        return ResponseEntity.ok(new ConfirmResponse(dailyLog.getTotalProteinGrams(), ack));
+        String ack = String.format("Logged! You've had %d grams of protein on %s.",
+                dailyLog.getTotalProteinGrams(), date);
+        return ResponseEntity.ok(new ConfirmResponse(
+                dailyLog.getTotalProteinGrams(), date.toString(), ack));
+    }
+
+    @DeleteMapping("/entry/{date}/{entryId}")
+    public ResponseEntity<?> deleteEntry(@PathVariable String date,
+                                         @PathVariable String entryId,
+                                         @AuthenticationPrincipal User user) {
+        LocalDate localDate = LocalDate.parse(date);
+        return dailyLogRepository.findByUserIdAndDate(user.getId(), localDate)
+                .map(log -> {
+                    if (!log.removeEntry(entryId)) {
+                        return ResponseEntity.notFound().build();
+                    }
+                    dailyLogRepository.save(log);
+                    return ResponseEntity.ok(new DailyLogResponse(
+                            log.getTotalProteinGrams(), log.getEntries()));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

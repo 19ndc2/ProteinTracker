@@ -36,4 +36,12 @@ public class DailyLog {
         entries.add(entry);
         totalProteinGrams += entry.getProteinGrams();
     }
+
+    public boolean removeEntry(String entryId) {
+        boolean removed = entries.removeIf(e -> entryId.equals(e.getId()));
+        if (removed) {
+            totalProteinGrams = entries.stream().mapToInt(FoodEntry::getProteinGrams).sum();
+        }
+        return removed;
+    }
 }

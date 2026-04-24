@@ -27,7 +27,11 @@ export class ProteinService {
     return this.http.post<ProteinEstimate>(`${this.base}/parse`, { transcript });
   }
 
-  confirm(foodDescription: string, proteinGrams: number): Observable<ConfirmResponse> {
-    return this.http.post<ConfirmResponse>(`${this.base}/confirm`, { foodDescription, proteinGrams });
+  confirm(foodDescription: string, proteinGrams: number, date?: string): Observable<ConfirmResponse> {
+    return this.http.post<ConfirmResponse>(`${this.base}/confirm`, { foodDescription, proteinGrams, date });
+  }
+
+  deleteEntry(date: string, entryId: string): Observable<DailyLogResponse> {
+    return this.http.delete<DailyLogResponse>(`${this.base}/entry/${date}/${entryId}`);
   }
 }

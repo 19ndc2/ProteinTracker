@@ -5,11 +5,13 @@ export interface ProteinEstimate {
 }
 
 export interface ConfirmResponse {
-  totalProteinGramsToday: number;
+  totalProteinGrams: number;
+  date: string;
   acknowledgementText: string;
 }
 
 export interface FoodEntry {
+  id: string;
   foodDescription: string;
   proteinGrams: number;
   loggedAt: string;

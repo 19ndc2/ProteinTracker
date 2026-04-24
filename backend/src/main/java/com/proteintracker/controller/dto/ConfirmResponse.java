@@ -1,6 +1,7 @@
 package com.proteintracker.controller.dto;
 
 public record ConfirmResponse(
-        int totalProteinGramsToday,
+        int totalProteinGrams,
+        String date,
         String acknowledgementText
 ) {}

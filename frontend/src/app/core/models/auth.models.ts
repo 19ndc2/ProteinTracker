@@ -3,6 +3,7 @@ export interface AuthResponse {
   userId: string;
   email: string;
   displayName: string;
+  dailyGoalGrams: number;
 }
 
 export interface UserResponse {
@@ -16,4 +17,5 @@ export interface AuthUser {
   userId: string;
   email: string;
   displayName: string;
+  dailyGoalGrams: number;
 }

@@ -31,6 +31,21 @@
       </button>
     </form>
 
+    <div class="date-row">
+      <label class="date-label" for="meal-date">Date:</label>
+      <input
+        id="meal-date"
+        class="date-input"
+        type="text"
+        placeholder="today (default)"
+        [ngModel]="dateInput()"
+        (ngModelChange)="dateInput.set($event)"
+        [ngModelOptions]="{standalone: true}"
+        [disabled]="state() === 'parsing'"
+        autocomplete="off"
+      />
+    </div>
+
     @if (voice.isRecording()) {
       <p class="recording-hint">Recording… tap ⏹ to finish</p>
     }
@@ -47,6 +62,9 @@
         <span class="grams-value">{{ preview()?.proteinGrams }}</span>
         <span class="grams-label">grams protein</span>
       </div>
+      @if (dateInput().trim() && dateInput().trim().toLowerCase() !== 'today') {
+        <p class="preview-date">Logging to: {{ dateInput().trim() }}</p>
+      }
       <div class="preview-actions">
         <button
           class="btn-primary"
