@@ -51,6 +51,7 @@
               <span class="ring-label" (click)="startEditGoal()" title="Click to change goal">
                 / {{ dailyGoal() }}g
               </span>
+              <button class="btn-edit-goal" (click)="startEditGoal()" title="Edit goal" aria-label="Edit daily goal">✏</button>
             }
           </div>
           <p class="ring-progress-label">{{ progress() }}% of daily goal</p>

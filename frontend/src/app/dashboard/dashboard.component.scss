@@ -250,6 +250,25 @@
 .btn-goal-save { color: var(--color-primary); }
 .btn-goal-cancel { color: var(--color-error); }
 
+.btn-edit-goal {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.15rem;
+  border-radius: 3px;
+  color: var(--color-text-muted);
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+
+  .ring-text:hover & {
+    opacity: 1;
+  }
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+
 .empty-state {
   text-align: center;
   color: var(--color-text-muted);
