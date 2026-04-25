@@ -34,6 +34,7 @@ class AuthControllerTest {
     @MockBean UserRepository userRepository;
     @MockBean JwtService jwtService;
     @MockBean JwtFilter jwtFilter;
+    @MockBean GoogleOAuthService googleOAuthService;
 
     private final User testUser = User.builder()
             .id("user-123")

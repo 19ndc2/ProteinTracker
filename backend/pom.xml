@@ -101,6 +101,11 @@
             <version>4.12.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.bwaldvogel</groupId>
+            <artifactId>mongo-java-server</artifactId>
+            <version>1.44.0</version>
+        </dependency>
     </dependencies>
 
     <build>
