@@ -128,6 +128,16 @@ resource "google_service_account_iam_member" "gha_wif_binding" {
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${var.github_repo}"
 }
 
+# ── Cloud Build default SA: GHA SA must be able to act as it to submit builds ─
+
+resource "google_service_account_iam_member" "gha_sa_act_as_cloudbuild_sa" {
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${data.google_project.project.number}-compute@developer.gserviceaccount.com"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.gha_sa.email}"
+
+  depends_on = [google_project_service.cloudbuild]
+}
+
 # ── Cloud Build default SA: push images to Artifact Registry ─────────────────
 
 resource "google_artifact_registry_repository_iam_member" "cloudbuild_sa_writer" {
