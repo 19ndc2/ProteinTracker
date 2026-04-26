@@ -62,7 +62,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 
-  @media (max-width: 480px) {
+  @media (max-width: 600px) {
     grid-template-columns: 1fr;
   }
 }
@@ -80,6 +80,10 @@
     font-weight: 700;
     color: var(--color-primary);
     line-height: 1;
+
+    @media (max-width: 400px) {
+      font-size: 1.5rem;
+    }
   }
 
   .summary-label {
