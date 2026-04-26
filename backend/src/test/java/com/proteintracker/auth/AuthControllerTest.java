@@ -6,6 +6,8 @@ import com.proteintracker.auth.dto.RegisterRequest;
 import com.proteintracker.config.SecurityConfig;
 import com.proteintracker.model.User;
 import com.proteintracker.repository.UserRepository;
+import jakarta.servlet.FilterChain;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,6 +20,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,6 +38,16 @@ class AuthControllerTest {
     @MockBean JwtService jwtService;
     @MockBean JwtFilter jwtFilter;
     @MockBean GoogleOAuthService googleOAuthService;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        // Without this, the mocked filter swallows every request and the controller is never reached.
+        doAnswer(inv -> {
+            FilterChain chain = inv.getArgument(2);
+            chain.doFilter(inv.getArgument(0), inv.getArgument(1));
+            return null;
+        }).when(jwtFilter).doFilter(any(), any(), any());
+    }
 
     private final User testUser = User.builder()
             .id("user-123")

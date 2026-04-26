@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
@@ -81,8 +83,8 @@ describe('AuthService', () => {
 
     // Simulate page reload — new service instance reads from localStorage
     const newService = new AuthService(
-      TestBed.inject(require('@angular/common/http').HttpClient),
-      TestBed.inject(require('@angular/router').Router)
+      TestBed.inject(HttpClient),
+      TestBed.inject(Router)
     );
     expect(newService.isAuthenticated()).toBeTrue();
   });
