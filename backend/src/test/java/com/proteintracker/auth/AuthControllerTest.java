@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
@@ -33,6 +34,7 @@ class AuthControllerTest {
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
+    @Autowired PasswordEncoder passwordEncoder;
 
     @MockBean UserRepository userRepository;
     @MockBean JwtService jwtService;
@@ -107,10 +109,9 @@ class AuthControllerTest {
 
     @Test
     void login_correctCredentials_returns200WithToken() throws Exception {
-        // BCrypt hash of "password123"
         User userWithHash = User.builder()
                 .id("user-123").email("test@example.com")
-                .passwordHash("$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy")
+                .passwordHash(passwordEncoder.encode("password123"))
                 .displayName("Test User").build();
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(userWithHash));
