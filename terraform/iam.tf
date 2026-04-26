@@ -81,6 +81,12 @@ resource "google_project_iam_member" "gha_sa_run_developer" {
   member  = "serviceAccount:${google_service_account.gha_sa.email}"
 }
 
+resource "google_project_iam_member" "gha_sa_logging_viewer" {
+  project = var.project_id
+  role    = "roles/logging.viewer"
+  member  = "serviceAccount:${google_service_account.gha_sa.email}"
+}
+
 resource "google_artifact_registry_repository_iam_member" "gha_sa_writer" {
   location   = var.region
   repository = google_artifact_registry_repository.registry.name
