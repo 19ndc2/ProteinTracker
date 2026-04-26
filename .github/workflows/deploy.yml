@@ -57,12 +57,28 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
 
       # Image is built entirely in GCP — no Docker Desktop needed on the runner.
+      # --async avoids a log-streaming permission error; we poll for the result.
       - name: Build & push image via Cloud Build
         run: |
-          gcloud builds submit . \
+          BUILD_ID=$(gcloud builds submit . \
             --tag=${{ env.IMAGE }}:${{ github.sha }} \
             --project=${{ env.PROJECT_ID }} \
-            --timeout=20m
+            --timeout=20m \
+            --async \
+            --format='value(id)')
+          echo "Cloud Build ID: $BUILD_ID"
+          while true; do
+            STATUS=$(gcloud builds describe "$BUILD_ID" \
+              --project=${{ env.PROJECT_ID }} \
+              --format='value(status)')
+            echo "Status: $STATUS"
+            case $STATUS in
+              SUCCESS) break ;;
+              FAILURE|CANCELLED|TIMEOUT|INTERNAL_ERROR|EXPIRED)
+                echo "Build failed: $STATUS"; exit 1 ;;
+              *) sleep 20 ;;
+            esac
+          done
 
       - name: Deploy to Cloud Run
         run: |
