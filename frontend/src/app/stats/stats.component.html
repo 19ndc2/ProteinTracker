@@ -1,0 +1,114 @@
+<div class="stats-page">
+  <header class="page-header">
+    <a routerLink="/dashboard" class="back-link">← Back</a>
+    <h1 class="page-title">Stats</h1>
+  </header>
+
+  <main class="page-main">
+    @if (loading()) {
+      <p class="loading-state">Loading…</p>
+    } @else if (error()) {
+      <div class="card empty-state">
+        <p>Could not load stats. Please try again later.</p>
+      </div>
+    } @else if (!stats() || stats()!.daysLogged === 0) {
+      <div class="card empty-state">
+        <p>No data for the past 30 days yet. Start logging meals on the dashboard.</p>
+        <a routerLink="/dashboard" class="btn-primary" style="display:inline-block;margin-top:1rem;">
+          Go to Dashboard
+        </a>
+      </div>
+    } @else {
+      <!-- Summary cards -->
+      <div class="summary-row">
+        <div class="card summary-card">
+          <span class="summary-value">{{ stats()!.averageProteinGrams }}g</span>
+          <span class="summary-label">Avg daily protein</span>
+          <span class="summary-sub">over logged days</span>
+        </div>
+        <div class="card summary-card">
+          <span class="summary-value">{{ stats()!.daysLogged }}</span>
+          <span class="summary-label">Days logged</span>
+          <span class="summary-sub">in the past 30 days</span>
+        </div>
+        <div class="card summary-card">
+          <span class="summary-value">{{ goalGrams() }}g</span>
+          <span class="summary-label">Daily goal</span>
+          <span class="summary-sub">set on dashboard</span>
+        </div>
+      </div>
+
+      <!-- Line chart -->
+      <div class="card chart-card">
+        <h2 class="chart-title">Daily protein — past 30 days</h2>
+
+        @if (hoveredPoint()) {
+          <p class="tooltip-text">
+            {{ hoveredPoint()!.date | date:'EEE, MMM d' }} — <strong>{{ hoveredPoint()!.proteinGrams }}g</strong>
+          </p>
+        } @else {
+          <p class="tooltip-text placeholder">&nbsp;</p>
+        }
+
+        <svg
+          class="line-chart"
+          [attr.viewBox]="'0 0 ' + chartW + ' ' + chartH"
+          preserveAspectRatio="xMidYMid meet"
+          aria-label="Daily protein line chart"
+        >
+          <!-- Gridlines -->
+          @for (gl of gridLines(); track gl.label) {
+            <line
+              [attr.x1]="plotLeft" [attr.y1]="gl.y"
+              [attr.x2]="chartW - 15" [attr.y2]="gl.y"
+              class="gridline"
+            />
+            <text [attr.x]="plotLeft - 6" [attr.y]="gl.y + 4" class="axis-label">{{ gl.label }}</text>
+          }
+
+          <!-- Goal line -->
+          <line
+            [attr.x1]="plotLeft" [attr.y1]="goalY()"
+            [attr.x2]="chartW - 15" [attr.y2]="goalY()"
+            class="goal-line"
+          />
+          <text [attr.x]="chartW - 14" [attr.y]="goalY() + 4" class="goal-label">Goal</text>
+
+          <!-- X-axis baseline -->
+          <line
+            [attr.x1]="plotLeft" [attr.y1]="plotBottom"
+            [attr.x2]="chartW - 15" [attr.y2]="plotBottom"
+            class="axis-line"
+          />
+
+          <!-- X-axis labels -->
+          @for (tick of xAxisTicks(); track tick.label) {
+            <text [attr.x]="tick.x" [attr.y]="plotBottom + 18" class="x-label">{{ tick.label }}</text>
+          }
+
+          <!-- Connecting line (only when 2+ points) -->
+          @if (polyline()) {
+            <polyline [attr.points]="polyline()" class="chart-line" />
+          }
+
+          <!-- Data points -->
+          @for (pt of chartPoints(); track pt.date) {
+            <circle
+              [attr.cx]="pt.x" [attr.cy]="pt.y" r="5"
+              class="data-dot"
+              (mouseenter)="hoverPoint(pt)"
+              (mouseleave)="clearHover()"
+            >
+              <title>{{ pt.date }}: {{ pt.proteinGrams }}g</title>
+            </circle>
+          }
+        </svg>
+
+        <p class="chart-legend">
+          <span class="legend-dot"></span> Logged day &nbsp;&nbsp;
+          <span class="legend-goal"></span> Daily goal
+        </p>
+      </div>
+    }
+  </main>
+</div>

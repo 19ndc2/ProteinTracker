@@ -6,6 +6,7 @@ import {
   ConfirmResponse,
   DailyLogResponse,
   HistoryDay,
+  MonthlyStats,
   ProteinEstimate
 } from './models/protein.models';
 
@@ -33,5 +34,9 @@ export class ProteinService {
 
   deleteEntry(date: string, entryId: string): Observable<DailyLogResponse> {
     return this.http.delete<DailyLogResponse>(`${this.base}/entry/${date}/${entryId}`);
+  }
+
+  getMonthlyStats(): Observable<MonthlyStats> {
+    return this.http.get<MonthlyStats>(`${this.base}/stats/monthly`);
   }
 }

@@ -5,6 +5,7 @@
       <span class="header-title">Protein Tracker</span>
     </div>
     <div class="header-user">
+      <a routerLink="/stats" class="btn-ghost">Stats</a>
       <a routerLink="/history" class="btn-ghost">History</a>
       <span class="user-name">{{ auth.currentUser()?.displayName }}</span>
       <button class="btn-secondary" (click)="auth.logout()">Log out</button>

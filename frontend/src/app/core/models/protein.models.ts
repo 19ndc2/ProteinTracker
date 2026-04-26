@@ -29,3 +29,14 @@ export interface HistoryDay {
   totalProteinGrams: number;
   entries: FoodEntry[];
 }
+
+export interface DayStat {
+  date: string;
+  proteinGrams: number;
+}
+
+export interface MonthlyStats {
+  days: DayStat[];
+  averageProteinGrams: number;
+  daysLogged: number;
+}

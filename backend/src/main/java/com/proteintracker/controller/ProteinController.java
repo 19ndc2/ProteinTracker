@@ -6,6 +6,7 @@ import com.proteintracker.agent.ProteinEstimate;
 import com.proteintracker.controller.dto.ConfirmRequest;
 import com.proteintracker.controller.dto.ConfirmResponse;
 import com.proteintracker.controller.dto.DailyLogResponse;
+import com.proteintracker.controller.dto.MonthlyStatsResponse;
 import com.proteintracker.controller.dto.ParseRequest;
 import com.proteintracker.model.DailyLog;
 import com.proteintracker.model.FoodEntry;
@@ -100,6 +101,25 @@ public class ProteinController {
                 dailyLog.getTotalProteinGrams(), date);
         return ResponseEntity.ok(new ConfirmResponse(
                 dailyLog.getTotalProteinGrams(), date.toString(), ack));
+    }
+
+    @GetMapping("/stats/monthly")
+    public ResponseEntity<MonthlyStatsResponse> getMonthlyStats(@AuthenticationPrincipal User user) {
+        LocalDate today = LocalDate.now();
+        LocalDate start = today.minusDays(29);
+
+        List<MonthlyStatsResponse.DayStat> days = dailyLogRepository
+                .findByUserIdAndDateBetween(user.getId(), start, today)
+                .stream()
+                .sorted(java.util.Comparator.comparing(DailyLog::getDate))
+                .map(log -> new MonthlyStatsResponse.DayStat(
+                        log.getDate().toString(), log.getTotalProteinGrams()))
+                .toList();
+
+        int average = days.isEmpty() ? 0
+                : (int) Math.round(days.stream().mapToInt(MonthlyStatsResponse.DayStat::proteinGrams).average().orElse(0));
+
+        return ResponseEntity.ok(new MonthlyStatsResponse(days, average, days.size()));
     }
 
     @DeleteMapping("/entry/{date}/{entryId}")
