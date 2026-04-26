@@ -63,9 +63,15 @@ resource "google_service_account" "gha_sa" {
   project      = var.project_id
 }
 
-resource "google_project_iam_member" "gha_sa_cloudbuild" {
+resource "google_project_iam_member" "gha_sa_cloudbuild_editor" {
   project = var.project_id
   role    = "roles/cloudbuild.builds.editor"
+  member  = "serviceAccount:${google_service_account.gha_sa.email}"
+}
+
+resource "google_project_iam_member" "gha_sa_cloudbuild_builder" {
+  project = var.project_id
+  role    = "roles/cloudbuild.builds.builder"
   member  = "serviceAccount:${google_service_account.gha_sa.email}"
 }
 
