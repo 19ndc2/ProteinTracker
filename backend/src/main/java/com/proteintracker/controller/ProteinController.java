@@ -64,7 +64,10 @@ public class ProteinController {
     public ResponseEntity<?> parse(@Valid @RequestBody ParseRequest request,
                                    @AuthenticationPrincipal User user) {
         try {
-            String json = proteinAgent.estimateProtein(request.transcript(), LocalDate.now().toString());
+            String today = (request.localDate() != null && !request.localDate().isBlank())
+                    ? request.localDate()
+                    : LocalDate.now().toString();
+            String json = proteinAgent.estimateProtein(request.transcript(), today);
             ProteinEstimate estimate = objectMapper.readValue(json.trim(), ProteinEstimate.class);
             return ResponseEntity.ok(estimate);
         } catch (Exception e) {

@@ -22,7 +22,12 @@ export class LogMealComponent {
   preview = signal<ProteinEstimate | null>(null);
   errorMsg = signal('');
 
-  readonly today = new Date().toISOString().slice(0, 10);
+  // Use local date, not UTC — toISOString() returns the UTC date which is wrong for users in US timezones at night
+  private localDateString(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+  readonly today = this.localDateString();
 
   constructor(
     private proteinService: ProteinService,
@@ -35,7 +40,7 @@ export class LogMealComponent {
     this.state.set('parsing');
     this.errorMsg.set('');
 
-    this.proteinService.parse(text).subscribe({
+    this.proteinService.parse(text, this.today).subscribe({
       next: (estimate) => {
         this.preview.set(estimate);
         this.state.set('preview');
@@ -53,7 +58,7 @@ export class LogMealComponent {
     if (!p || this.state() !== 'preview') return;
     this.state.set('confirming');
 
-    this.proteinService.confirm(p.foodDescription, p.proteinGrams, p.date ?? undefined).subscribe({
+    this.proteinService.confirm(p.foodDescription, p.proteinGrams, p.date ?? this.today).subscribe({
       next: (res) => {
         this.mealConfirmed.emit(res);
         this.voice.speak(res.acknowledgementText).catch(() => {});

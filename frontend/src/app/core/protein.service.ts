@@ -24,8 +24,8 @@ export class ProteinService {
     return this.http.get<HistoryDay[]>(`${this.base}/history`);
   }
 
-  parse(transcript: string): Observable<ProteinEstimate> {
-    return this.http.post<ProteinEstimate>(`${this.base}/parse`, { transcript });
+  parse(transcript: string, localDate: string): Observable<ProteinEstimate> {
+    return this.http.post<ProteinEstimate>(`${this.base}/parse`, { transcript, localDate });
   }
 
   confirm(foodDescription: string, proteinGrams: number, date?: string): Observable<ConfirmResponse> {
