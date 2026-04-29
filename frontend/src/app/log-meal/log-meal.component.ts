@@ -78,7 +78,6 @@ export class LogMealComponent {
         next: (text) => {
           if (text.trim()) {
             this.transcript.set(text);
-            this.parse();
           }
         },
         error: () => this.errorMsg.set('Recording failed. Please try again.')
