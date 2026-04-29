@@ -79,30 +79,5 @@ export class VoiceService {
     });
   }
 
-  async speak(text: string): Promise<void> {
-    const cfg = await this.loadConfig();
 
-    const res = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${cfg.voiceId}`,
-      {
-        method: 'POST',
-        headers: { 'xi-api-key': cfg.apiKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: { stability: 0.5, similarity_boost: 0.75 }
-        })
-      }
-    );
-
-    if (!res.ok) throw new Error(`TTS error ${res.status}`);
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    return new Promise((resolve, reject) => {
-      audio.onended = () => { URL.revokeObjectURL(url); resolve(); };
-      audio.onerror = reject;
-      audio.play();
-    });
-  }
 }

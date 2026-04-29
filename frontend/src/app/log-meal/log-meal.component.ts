@@ -44,7 +44,6 @@ export class LogMealComponent {
       next: (estimate) => {
         this.preview.set(estimate);
         this.state.set('preview');
-        this.voice.speak(estimate.confirmationText).catch(() => {});
       },
       error: () => {
         this.errorMsg.set('Could not estimate protein. Please try again.');
@@ -61,7 +60,6 @@ export class LogMealComponent {
     this.proteinService.confirm(p.foodDescription, p.proteinGrams, p.date ?? this.today).subscribe({
       next: (res) => {
         this.mealConfirmed.emit(res);
-        this.voice.speak(res.acknowledgementText).catch(() => {});
         this.state.set('done');
         setTimeout(() => this.reset(), 2500);
       },
