@@ -73,6 +73,24 @@ test.describe('Meal Logging', () => {
     await expect(page.locator('.meal-input')).toBeVisible();
   });
 
+  test('explicit "Ng protein" suffix uses that value as the estimate', async ({ page }) => {
+    await enterMeal(page, 'chickpea salad 30g protein');
+    await page.locator('.btn-log').click();
+
+    await expect(page.locator('.preview-card')).toBeVisible({ timeout: 10000 });
+    const gramsText = await page.locator('.preview-grams .grams-value').textContent();
+    expect(Number(gramsText?.trim())).toBe(30);
+  });
+
+  test('trailing "Ng" suffix uses that value as the estimate', async ({ page }) => {
+    await enterMeal(page, 'chicken salad 50g');
+    await page.locator('.btn-log').click();
+
+    await expect(page.locator('.preview-card')).toBeVisible({ timeout: 10000 });
+    const gramsText = await page.locator('.preview-grams .grams-value').textContent();
+    expect(Number(gramsText?.trim())).toBe(50);
+  });
+
   test('confirming a meal updates the daily protein ring total', async ({ page }) => {
     const gramsBefore = Number((await page.locator('.ring-total').textContent())?.trim() ?? '0');
 

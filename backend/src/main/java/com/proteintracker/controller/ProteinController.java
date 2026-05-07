@@ -24,11 +24,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/protein")
 public class ProteinController {
+
+    private static final Pattern EXPLICIT_PROTEIN_PATTERN = Pattern.compile(
+        "\\b(\\d+(?:\\.\\d+)?)\\s*g(?:rams?)?\\s*(?:of\\s*)?protein\\b" +
+        "|\\b(\\d+(?:\\.\\d+)?)\\s*g(?:rams?)?\\s*$",
+        Pattern.CASE_INSENSITIVE
+    );
 
     private final ProteinAgent proteinAgent;
     private final DailyLogRepository dailyLogRepository;
@@ -64,6 +73,19 @@ public class ProteinController {
     public ResponseEntity<?> parse(@Valid @RequestBody ParseRequest request,
                                    @AuthenticationPrincipal User user) {
         try {
+            OptionalInt explicitGrams = extractExplicitProteinGrams(request.transcript());
+            if (explicitGrams.isPresent()) {
+                int grams = explicitGrams.getAsInt();
+                String foodDesc = cleanFoodDescription(request.transcript());
+                ProteinEstimate estimate = new ProteinEstimate(
+                    foodDesc,
+                    grams,
+                    "You specified " + grams + " grams of protein for " + foodDesc + ". Does that look right?",
+                    null
+                );
+                return ResponseEntity.ok(estimate);
+            }
+
             String today = (request.localDate() != null && !request.localDate().isBlank())
                     ? request.localDate()
                     : LocalDate.now().toString();
@@ -123,6 +145,20 @@ public class ProteinController {
                 : (int) Math.round(days.stream().mapToInt(MonthlyStatsResponse.DayStat::proteinGrams).average().orElse(0));
 
         return ResponseEntity.ok(new MonthlyStatsResponse(days, average, days.size()));
+    }
+
+    private OptionalInt extractExplicitProteinGrams(String transcript) {
+        Matcher m = EXPLICIT_PROTEIN_PATTERN.matcher(transcript.trim());
+        if (m.find()) {
+            String num = m.group(1) != null ? m.group(1) : m.group(2);
+            return OptionalInt.of((int) Math.round(Double.parseDouble(num)));
+        }
+        return OptionalInt.empty();
+    }
+
+    private String cleanFoodDescription(String transcript) {
+        return EXPLICIT_PROTEIN_PATTERN.matcher(transcript.trim())
+            .replaceFirst("").trim().replaceAll("\\s{2,}", " ");
     }
 
     @DeleteMapping("/entry/{date}/{entryId}")
