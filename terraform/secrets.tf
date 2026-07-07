@@ -20,17 +20,6 @@ resource "google_secret_manager_secret" "jwt_secret" {
   depends_on = [google_project_service.secretmanager]
 }
 
-resource "google_secret_manager_secret" "cors_allowed_origins" {
-  secret_id = "cors-allowed-origins"
-  project   = var.project_id
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [google_project_service.secretmanager]
-}
-
 resource "google_secret_manager_secret" "mistral_api_key" {
   secret_id = "mistral-api-key"
   project   = var.project_id

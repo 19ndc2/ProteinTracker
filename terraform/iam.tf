@@ -18,12 +18,6 @@ resource "google_secret_manager_secret_iam_member" "run_sa_jwt_secret" {
   member    = "serviceAccount:${google_service_account.run_sa.email}"
 }
 
-resource "google_secret_manager_secret_iam_member" "run_sa_cors_allowed_origins" {
-  secret_id = google_secret_manager_secret.cors_allowed_origins.id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.run_sa.email}"
-}
-
 resource "google_secret_manager_secret_iam_member" "run_sa_mistral_api_key" {
   secret_id = google_secret_manager_secret.mistral_api_key.id
   role      = "roles/secretmanager.secretAccessor"

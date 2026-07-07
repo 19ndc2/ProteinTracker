@@ -1,3 +1,17 @@
+locals {
+  # Cloud Run's project-number-based URL is deterministic and always valid,
+  # so it can be computed up front instead of waiting on the service's own
+  # (circular) .uri output. But this already-provisioned service's *actual*
+  # default URL is the original hash-based one GCP assigned at creation time
+  # (what `gcloud run services describe --format=value(status.url)` returns,
+  # and what CI's e2e job uses as BASE_URL) — that hash isn't derivable from
+  # other inputs, so it's listed as a literal. Both are allowed so CORS keeps
+  # working regardless of which origin a client actually uses.
+  cloud_run_url_computed = "https://protein-tracker-${data.google_project.project.number}.${var.region}.run.app"
+  cloud_run_url_actual   = "https://protein-tracker-lzkghp6vta-uc.a.run.app"
+  cors_allowed_origins   = "${local.cloud_run_url_computed},${local.cloud_run_url_actual}"
+}
+
 resource "google_cloud_run_v2_service" "app" {
   name     = "protein-tracker"
   location = var.region
@@ -42,13 +56,8 @@ resource "google_cloud_run_v2_service" "app" {
       }
 
       env {
-        name = "CORS_ALLOWED_ORIGINS"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.cors_allowed_origins.secret_id
-            version = "latest"
-          }
-        }
+        name  = "CORS_ALLOWED_ORIGINS"
+        value = local.cors_allowed_origins
       }
 
       env {
@@ -103,7 +112,6 @@ resource "google_cloud_run_v2_service" "app" {
     google_project_service.run,
     google_secret_manager_secret_iam_member.run_sa_mongodb_uri,
     google_secret_manager_secret_iam_member.run_sa_jwt_secret,
-    google_secret_manager_secret_iam_member.run_sa_cors_allowed_origins,
     google_secret_manager_secret_iam_member.run_sa_mistral_api_key,
     google_secret_manager_secret_iam_member.run_sa_google_client_id,
     google_secret_manager_secret_iam_member.run_sa_elevenlabs_api_key,
