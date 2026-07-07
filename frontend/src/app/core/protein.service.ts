@@ -16,8 +16,8 @@ export class ProteinService {
 
   constructor(private http: HttpClient) {}
 
-  getToday(): Observable<DailyLogResponse> {
-    return this.http.get<DailyLogResponse>(`${this.base}/today`);
+  getToday(date: string): Observable<DailyLogResponse> {
+    return this.http.get<DailyLogResponse>(`${this.base}/today`, { params: { date } });
   }
 
   getHistory(): Observable<HistoryDay[]> {

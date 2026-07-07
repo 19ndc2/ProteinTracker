@@ -44,12 +44,14 @@ public class ProteinController {
     }
 
     @GetMapping("/today")
-    public ResponseEntity<DailyLogResponse> getToday(@AuthenticationPrincipal User user) {
+    public ResponseEntity<DailyLogResponse> getToday(@RequestParam(required = false) String date,
+                                                      @AuthenticationPrincipal User user) {
+        LocalDate localDate = (date != null && !date.isBlank()) ? LocalDate.parse(date) : LocalDate.now();
         DailyLog dailyLog = dailyLogRepository
-                .findByUserIdAndDate(user.getId(), LocalDate.now())
+                .findByUserIdAndDate(user.getId(), localDate)
                 .orElseGet(() -> DailyLog.builder()
                         .userId(user.getId())
-                        .date(LocalDate.now())
+                        .date(localDate)
                         .build());
         return ResponseEntity.ok(new DailyLogResponse(
                 dailyLog.getTotalProteinGrams(), dailyLog.getEntries()));

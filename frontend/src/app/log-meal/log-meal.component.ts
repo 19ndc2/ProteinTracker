@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProteinService } from '../core/protein.service';
 import { VoiceService } from '../core/voice.service';
 import { ConfirmResponse, ProteinEstimate } from '../core/models/protein.models';
+import { localDateString } from '../core/date.util';
 
 type State = 'idle' | 'parsing' | 'preview' | 'confirming' | 'done';
 
@@ -22,12 +23,7 @@ export class LogMealComponent {
   preview = signal<ProteinEstimate | null>(null);
   errorMsg = signal('');
 
-  // Use local date, not UTC — toISOString() returns the UTC date which is wrong for users in US timezones at night
-  private localDateString(): string {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  }
-  readonly today = this.localDateString();
+  readonly today = localDateString();
 
   constructor(
     private proteinService: ProteinService,

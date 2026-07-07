@@ -6,6 +6,7 @@ import { AuthService } from '../core/auth.service';
 import { ProteinService } from '../core/protein.service';
 import { LogMealComponent } from '../log-meal/log-meal.component';
 import { ConfirmResponse, FoodEntry } from '../core/models/protein.models';
+import { localDateString } from '../core/date.util';
 
 @Component({
   selector: 'app-dashboard',
@@ -38,7 +39,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onMealConfirmed(res: ConfirmResponse): void {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localDateString();
     if (res.date === today) {
       this.totalGrams.set(res.totalProteinGrams);
     }
@@ -46,7 +47,7 @@ export class DashboardComponent implements OnInit {
   }
 
   deleteEntry(entryId: string): void {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localDateString();
     this.proteinService.deleteEntry(today, entryId).subscribe({
       next: (data) => {
         this.entries.set(data.entries);
@@ -72,7 +73,7 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadToday(): void {
-    this.proteinService.getToday().subscribe({
+    this.proteinService.getToday(localDateString()).subscribe({
       next: (data) => {
         this.totalGrams.set(data.totalProteinGrams);
         this.entries.set(data.entries);
