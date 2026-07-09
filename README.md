@@ -49,9 +49,10 @@ The Angular app is built as static assets and copied into the Spring Boot jar, s
 
 - **Backend**: JUnit tests against an embedded in-memory MongoDB (no external DB needed)
 - **Frontend**: Karma/Jasmine unit tests
-- **End-to-end**: a 19-test Playwright suite (auth, goal-setting, meal-logging) that runs against the **live deployed site** on every push to `main` — not a staging mock
+- **End-to-end (Playwright)**: a 19-test suite in [`frontend/e2e/`](frontend/e2e) (auth, goal-setting, meal-logging) that runs against the **live deployed site** on every push to `main` — not a staging mock. Run locally with `npm run e2e`.
+- **End-to-end (Cypress)**: the same 19 tests duplicated in [`frontend/cypress/e2e/`](frontend/cypress/e2e) — a deliberate side-by-side port to demonstrate both major e2e frameworks. **Manual-only, not wired into CI.** Run locally with `npm run cy:run` (headless) or `npm run cy:open` (interactive).
 
-Push to `main` triggers a 4-stage GitHub Actions pipeline: run backend tests → run frontend tests → build the image via Cloud Build and deploy to Cloud Run → run the full e2e suite against the freshly deployed URL. Deploys use Workload Identity Federation, so no long-lived GCP credentials are stored in CI.
+Push to `main` triggers a 4-stage GitHub Actions pipeline: run backend tests → run frontend tests → build the image via Cloud Build and deploy to Cloud Run → run the full Playwright e2e suite against the freshly deployed URL. Deploys use Workload Identity Federation, so no long-lived GCP credentials are stored in CI. The Cypress suite is intentionally excluded from this pipeline. See [`docs/TESTING.md`](docs/TESTING.md) for exact setup and run steps for both suites.
 
 ## Running Locally
 
