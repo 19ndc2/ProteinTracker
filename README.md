@@ -76,6 +76,12 @@ For a quick backend run without Docker, use the `e2e` Spring profile (`SPRING_PR
 
 MIT — see [LICENSE](LICENSE).
 
+## CI/CD Pipeline
+
+The project uses GitHub Actions for automated testing and deployment:
+- On every push to `main`, the CI/CD workflow runs backend tests, frontend tests, builds a Docker image, deploys to Google Cloud Run, and runs end-to-end tests against the live deployment.
+- Deployment uses Workload Identity Federation for secure, keyless authentication to GCP.
+
 ## Author
 
 **Nile Cochen** — [github.com/19ndc2](https://github.com/19ndc2)
